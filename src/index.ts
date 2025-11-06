@@ -115,7 +115,7 @@ export default class MyPlugin extends Plugin {
 				restApi.getPublicApi(manifest);
 			console.log("#result", result);
 			const route = result.addRoute("/mcp");
-			registerMcpRoute(route);
+			registerMcpRoute(route, this.app);
 		}
 	}
 

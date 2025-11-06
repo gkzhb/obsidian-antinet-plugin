@@ -1,34 +1,58 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { TFile, App } from "obsidian";
 
-export const createServer = () => {
+export const createServer = (app: App) => {
 	// Create server instance
 	const server = new McpServer({
-		name: "weather",
+		name: "Obsidian Antinet Zettelkasten",
 		version: "1.0.0",
 	});
 
-	// Register weather tools
+	// Register tools
 	server.registerTool(
-		"get-forecast",
+		"read_main_card",
 		{
-			title: "Get Weather Forecast",
-			description: "Get weather forecast for a location",
+			title: "Read main card content",
 			inputSchema: {
-				latitude: z.number().min(-90).max(90),
-				longitude: z.number().min(-180).max(180),
+				id: z.string().describe("Main card ID"),
 			},
 		},
-		async ({ latitude, longitude }) => {
-			return {
-				content: [
-					{
-						type: "text",
-						text: "hi there",
-					},
-				],
-			};
+		async ({ id }) => {
+			try {
+				// 使用 Obsidian API 读取笔记内容
+				const file = app.vault.getAbstractFileByPath(id);
+				if (!file || !(file instanceof TFile)) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `File not found: ${id}`,
+							},
+						],
+					};
+				}
+				
+				const content = await app.vault.read(file);
+				return {
+					content: [
+						{
+							type: "text",
+							text: content,
+						},
+					],
+				};
+			} catch (error) {
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Error reading file: ${error.message}`,
+						},
+					],
+				};
+			}
 		},
 	);
 

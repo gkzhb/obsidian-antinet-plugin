@@ -1,8 +1,9 @@
+import { App } from "obsidian";
 import { IRoute, Request, Response } from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createServer } from "./mcp_server";
 
-export const registerMcpRoute = (route: IRoute) => {
+export const registerMcpRoute = (route: IRoute, app: App) => {
 	console.log("#route", route);
 	// Initialize transport
 	const transport = new StreamableHTTPServerTransport({
@@ -45,7 +46,7 @@ export const registerMcpRoute = (route: IRoute) => {
 	route.get(methodNotAllowed);
 	route.delete(methodNotAllowed);
 
-	const { server } = createServer();
+	const { server } = createServer(app);
 	server.connect(transport);
 	// Handle server shutdown
 	process.on("SIGINT", async () => {

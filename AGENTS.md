@@ -5,6 +5,12 @@
 - Target: Obsidian Community Plugin (TypeScript → bundled JavaScript).
 - Entry point: `main.ts` compiled to `main.js` and loaded by Obsidian.
 - Required release artifacts: `main.js`, `manifest.json`, and optional `styles.css`.
+- **Project Name**: Obsidian Antinet Zettelkasten MCP Plugin
+- **Purpose**: 集成 Model Context Protocol (MCP) 服务器到 Obsidian，实现 Antinet 卡片盒笔记法功能
+- **Key Features**: 
+  - 通过 MCP 协议读取 Obsidian 笔记内容
+  - 支持 Antinet 卡片盒笔记法的知识管理
+  - 提供 REST API 接口与外部工具集成
 
 ## Environment & tooling
 
@@ -12,6 +18,11 @@
 - **Package manager: npm** (required for this sample - `package.json` defines npm scripts and dependencies).
 - **Bundler: esbuild** (required for this sample - `esbuild.config.mjs` and build scripts depend on it). Alternative bundlers like Rollup or webpack are acceptable for other projects if they bundle all external dependencies into `main.js`.
 - Types: `obsidian` type definitions.
+- **Dependencies**: 
+  - `@modelcontextprotocol/sdk`: MCP 协议实现
+  - `zod`: 数据验证和模式定义
+  - `express`: REST API 框架
+  - `obsidian-local-rest-api`: Obsidian 本地 REST API 插件集成
 
 **Note**: This sample project has specific technical dependencies on npm and esbuild. If you're creating a plugin from scratch, you can choose different tools, but you'll need to replace the build configuration accordingly.
 
@@ -44,22 +55,16 @@ npm run build
 
 - **Organize code into multiple files**: Split functionality across separate modules rather than putting everything in `main.ts`.
 - Source lives in `src/`. Keep `main.ts` small and focused on plugin lifecycle (loading, unloading, registering commands).
-- **Example file structure**:
+- **Current project structure**:
   ```
   src/
     main.ts           # Plugin entry point, lifecycle management
-    settings.ts       # Settings interface and defaults
-    commands/         # Command implementations
-      command1.ts
-      command2.ts
-    ui/              # UI components, modals, views
-      modal.ts
-      view.ts
-    utils/           # Utility functions, helpers
-      helpers.ts
-      constants.ts
-    types.ts         # TypeScript interfaces and types
+    index.ts          # 插件主类，处理 Obsidian 集成
+    mcp.ts            # MCP 路由注册和处理
+    mcp_server.ts     # MCP 服务器实现，提供工具接口
+    api.ts            # REST API 接口定义
   ```
+- **MCP 工具**: 当前实现了 `read_main_card` 工具，用于读取 Obsidian 笔记内容
 - **Do not commit build artifacts**: Never commit `node_modules/`, `main.js`, or other generated files to version control.
 - Keep the plugin small. Avoid large dependencies. Prefer browser-compatible packages.
 - Generated output should be placed at the plugin root or `dist/` depending on your build setup. Release artifacts must end up at the top level of the plugin folder in the vault (`main.js`, `manifest.json`, `styles.css`).
