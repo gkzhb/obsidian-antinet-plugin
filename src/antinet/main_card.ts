@@ -30,6 +30,7 @@ export const readMainCardTool: RegisterToolCallback<
 								text: `File not found: ${id}`,
 							},
 						],
+						isError: true,
 					};
 				}
 
@@ -58,6 +59,7 @@ export const readMainCardTool: RegisterToolCallback<
 							text: `Error reading file: ${error.message}`,
 						},
 					],
+					isError: true,
 				};
 			}
 		},
@@ -108,7 +110,7 @@ export const listTreeRootMainCard: RegisterToolCallback<
 				return {
 					content: [
 						{
-							type: "text" as const,
+							type: "text",
 							text: JSON.stringify(fileList, null, 2),
 						},
 					],
@@ -117,10 +119,11 @@ export const listTreeRootMainCard: RegisterToolCallback<
 				return {
 					content: [
 						{
-							type: "text" as const,
+							type: "text",
 							text: `Error listing files: ${error.message}`,
 						},
 					],
+					isError: true,
 				};
 			}
 		},
