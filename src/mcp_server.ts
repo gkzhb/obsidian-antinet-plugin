@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
-import { TFile, App } from "obsidian";
+import { App } from "obsidian";
+import { listTreeRootMainCard, readMainCardTool } from "./antinet/main_card";
+import { registerTool } from "./mcps";
 
 export const createServer = (app: App) => {
 	// Create server instance
@@ -11,50 +12,10 @@ export const createServer = (app: App) => {
 	});
 
 	// Register tools
-	server.registerTool(
-		"read_main_card",
-		{
-			title: "Read main card content",
-			inputSchema: {
-				id: z.string().describe("Main card ID"),
-			},
-		},
-		async ({ id }) => {
-			try {
-				// 使用 Obsidian API 读取笔记内容
-				const file = app.vault.getAbstractFileByPath(id);
-				if (!file || !(file instanceof TFile)) {
-					return {
-						content: [
-							{
-								type: "text",
-								text: `File not found: ${id}`,
-							},
-						],
-					};
-				}
-				
-				const content = await app.vault.read(file);
-				return {
-					content: [
-						{
-							type: "text",
-							text: content,
-						},
-					],
-				};
-			} catch (error) {
-				return {
-					content: [
-						{
-							type: "text",
-							text: `Error reading file: ${error.message}`,
-						},
-					],
-				};
-			}
-		},
-	);
+	[readMainCardTool, listTreeRootMainCard].forEach((getTool) => {
+		const tool = getTool({ app, server });
+		registerTool(server, tool);
+	});
 
 	return { server };
 };
