@@ -1,6 +1,7 @@
 import { McpServer, ToolCallback } from "@modelcontextprotocol/sdk/server/mcp";
 import { ToolAnnotations } from "@modelcontextprotocol/sdk/types";
 import { App } from "obsidian";
+import { DataviewApi } from "obsidian-dataview";
 import { ZodRawShape } from "zod";
 
 export interface MCPToolConfig<

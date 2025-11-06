@@ -4,7 +4,6 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { createServer } from "./mcp_server";
 
 export const registerMcpRoute = (route: IRoute, app: App) => {
-	console.log("#route", route);
 	// Initialize transport
 	const transport = new StreamableHTTPServerTransport({
 		sessionIdGenerator: undefined, // set to undefined for stateless servers

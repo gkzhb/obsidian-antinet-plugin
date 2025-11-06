@@ -11,6 +11,7 @@ import {
 } from "obsidian";
 import LocalRestApiPublicApi from "./api";
 import { registerMcpRoute } from "./mcp";
+import { setApp } from "./utils/obsidian";
 
 // Remember to rename these classes and interfaces!
 
@@ -26,6 +27,7 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		setApp(this.app);
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.

@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.20.2",
 		"express": "^4.21.1",
+		"obsidian-dataview": "^0.5.68",
 		"zod": "^3.24.2"
 	}
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { App } from "obsidian";
+
 import { listTreeRootMainCard, readMainCardTool } from "./antinet/main_card";
 import { registerTool } from "./mcps";
 
