@@ -1,10 +1,8 @@
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 
 export interface SessionContext {
 	transport: StreamableHTTPServerTransport;
-	server: McpServer;
 	createdAt: Date;
 	lastActivity: Date;
 	sessionId: string;
@@ -38,15 +36,8 @@ export class SessionManager {
 			sessionIdGenerator: () => sessionId,
 		});
 
-		// Create server instance for this session
-		const server = new McpServer({
-			name: "Obsidian Antinet Zettelkasten",
-			version: "1.0.0",
-		});
-
 		const context: SessionContext = {
 			transport,
-			server,
 			createdAt: now,
 			lastActivity: now,
 			sessionId,
@@ -88,14 +79,7 @@ export class SessionManager {
 				);
 			}
 
-			try {
-				session.server.close();
-			} catch (error) {
-				console.error(
-					`Error closing server for session ${sessionId}:`,
-					error,
-				);
-			}
+
 		}
 	}
 
@@ -120,7 +104,7 @@ export class SessionManager {
 	/**
 	 * Clean up expired sessions
 	 */
-	private cleanupExpiredSessions(): void {
+	cleanupExpiredSessions(): void {
 		const now = new Date();
 		const expiredSessions: string[] = [];
 
@@ -214,14 +198,7 @@ export class SessionManager {
 						error,
 					);
 				}
-				try {
-					await context.server.close();
-				} catch (error) {
-					console.error(
-						`Error closing server for session ${sessionId}:`,
-						error,
-					);
-				}
+
 			},
 		);
 

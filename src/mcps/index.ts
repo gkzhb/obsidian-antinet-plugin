@@ -1,8 +1,8 @@
 import { McpServer, ToolCallback } from "@modelcontextprotocol/sdk/server/mcp";
 import { ToolAnnotations } from "@modelcontextprotocol/sdk/types";
 import { App } from "obsidian";
-import { DataviewApi } from "obsidian-dataview";
 import { ZodRawShape } from "zod";
+import { SessionManager } from "../session_manager";
 
 export interface MCPToolConfig<
 	InputArgs extends ZodRawShape,
@@ -20,13 +20,16 @@ export interface MCPToolConfig<
 	handler: ToolCallback<InputArgs>;
 }
 
+export interface ServerContext {
+	app: App;
+	server: McpServer;
+	sessionManager: SessionManager;
+}
+
 export type RegisterToolCallback<
 	InputArgs extends ZodRawShape,
 	OutputArgs extends ZodRawShape,
-> = (options: {
-	app: App;
-	server: McpServer;
-}) => MCPToolConfig<InputArgs, OutputArgs>;
+> = (options: ServerContext) => MCPToolConfig<InputArgs, OutputArgs>;
 
 export const registerTool = <
 	InputArgs extends ZodRawShape,

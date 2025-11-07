@@ -6,15 +6,13 @@ export const getSessionStatsTool: RegisterToolCallback<
 	typeof getSessionStatsInputSchema,
 	any
 > = (options) => {
-	const { server } = options;
-	
-	// Get session manager from the server context
-	const sessionManager = (server as any).sessionManager;
-	
+	const { sessionManager } = options;
+
 	const tool: MCPToolConfig<typeof getSessionStatsInputSchema, any> = {
 		name: "get_session_stats",
 		title: "Get session statistics",
-		description: "Get current session statistics including active and total sessions",
+		description:
+			"Get current session statistics including active and total sessions",
 		inputSchema: getSessionStatsInputSchema,
 		handler: async () => {
 			try {
@@ -63,11 +61,8 @@ export const cleanupSessionsTool: RegisterToolCallback<
 	typeof cleanupSessionsInputSchema,
 	any
 > = (options) => {
-	const { server } = options;
-	
-	// Get session manager from the server context
-	const sessionManager = (server as any).sessionManager;
-	
+	const { sessionManager } = options;
+
 	const tool: MCPToolConfig<typeof cleanupSessionsInputSchema, any> = {
 		name: "cleanup_sessions",
 		title: "Cleanup expired sessions",
@@ -88,11 +83,12 @@ export const cleanupSessionsTool: RegisterToolCallback<
 				}
 
 				const beforeStats = sessionManager.getSessionStats();
-				sessionManager["cleanupExpiredSessions"](); // Access private method
+				sessionManager.cleanupExpiredSessions();
 				const afterStats = sessionManager.getSessionStats();
-				
-				const cleanedUp = beforeStats.totalSessions - afterStats.totalSessions;
-				
+
+				const cleanedUp =
+					beforeStats.totalSessions - afterStats.totalSessions;
+
 				return {
 					content: [
 						{
@@ -118,3 +114,4 @@ export const cleanupSessionsTool: RegisterToolCallback<
 
 	return tool;
 };
+

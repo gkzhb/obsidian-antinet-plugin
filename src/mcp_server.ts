@@ -3,54 +3,39 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { App } from "obsidian";
 
 import { listTreeRootMainCard, readMainCardTool } from "./antinet/main_card";
-import { getSessionStatsTool, cleanupSessionsTool } from "./antinet/session_tools";
-import { registerTool } from "./mcps";
+import {
+	getSessionStatsTool,
+	cleanupSessionsTool,
+} from "./antinet/session_tools";
+import { registerTool, ServerContext } from "./mcps";
 import { SessionManager } from "./session_manager";
 
-export interface ServerContext {
-	app: App;
-	server: McpServer;
-}
-
-export const createServer = (app: App) => {
-	// Create server instance
-	const server = new McpServer({
-		name: "Obsidian Antinet Zettelkasten",
-		version: "1.0.0",
-	});
-
-	// Register tools
-	[readMainCardTool, listTreeRootMainCard].forEach((getTool) => {
-		const tool = getTool({ app, server });
-		registerTool(server, tool);
-	});
-
-	return { server };
-};
-
 /**
- * Create a new server instance for a specific session
- * This allows each session to have its own isolated server context
+ * Create a new MCP server instance with all tools registered
+ * This function focuses on MCP protocol implementation and tool registration
  */
-export const createSessionServer = (app: App, sessionManager?: SessionManager): ServerContext => {
+export const createMcpServer = (
+	app: App,
+	sessionManager: SessionManager,
+): McpServer => {
 	const server = new McpServer({
 		name: "Obsidian Antinet Zettelkasten",
 		version: "1.0.0",
 	});
 
-	// Attach session manager to server for tools to access
-	(server as any).sessionManager = sessionManager;
+	// Create server context for tool registration
+	const context: ServerContext = { app, server, sessionManager };
 
-	// Register tools for this session
+	// Register tools for this server instance
 	[
-		readMainCardTool, 
+		readMainCardTool,
 		listTreeRootMainCard,
 		getSessionStatsTool,
-		cleanupSessionsTool
+		cleanupSessionsTool,
 	].forEach((getTool) => {
-		const tool = getTool({ app, server });
+		const tool = getTool(context);
 		registerTool(server, tool);
 	});
 
-	return { app, server };
+	return server;
 };

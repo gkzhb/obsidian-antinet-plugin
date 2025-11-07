@@ -1,7 +1,7 @@
 import { App } from "obsidian";
 import { IRoute, Request, Response } from "express";
 import { SessionManager } from "./session_manager";
-import { createSessionServer } from "./mcp_server";
+import { createMcpServer } from "./mcp_server";
 
 export const registerMcpRoute = (route: IRoute, app: App) => {
 	// Initialize session manager
@@ -30,8 +30,8 @@ export const registerMcpRoute = (route: IRoute, app: App) => {
 				sessionContext = sessionManager.createSession();
 				console.log(`Created new session: ${sessionContext.sessionId}`);
 				
-				// Connect server to transport for new session
-				const { server } = createSessionServer(app, sessionManager);
+				// Create MCP server for new session
+				const server = createMcpServer(app, sessionManager);
 				await server.connect(sessionContext.transport);
 			} else {
 				// Invalid session and not initialize request
