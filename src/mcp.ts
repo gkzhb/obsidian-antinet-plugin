@@ -1,19 +1,57 @@
 import { App } from "obsidian";
 import { IRoute, Request, Response } from "express";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { createServer } from "./mcp_server";
+import { SessionManager } from "./session_manager";
+import { createSessionServer } from "./mcp_server";
 
 export const registerMcpRoute = (route: IRoute, app: App) => {
-	// Initialize transport
-	const transport = new StreamableHTTPServerTransport({
-		sessionIdGenerator: undefined, // set to undefined for stateless servers
-	});
+	// Initialize session manager
+	const sessionManager = new SessionManager();
 
 	// MCP endpoint
 	route.post(async (req: Request, res: Response) => {
 		console.log("Received MCP request:", req.body);
+		
 		try {
-			await transport.handleRequest(req, res, req.body);
+			// Get session from request headers
+			const existingSession = sessionManager.getSessionFromRequest(req);
+			
+			// Check if this is an initialize request
+			const isInitialize = sessionManager.isInitializeRequest(req.body);
+			
+			let sessionContext: any;
+			
+			// Handle session creation or retrieval
+			if (existingSession) {
+				// Use existing session
+				sessionContext = existingSession;
+				console.log(`Using existing session: ${sessionContext.sessionId}`);
+			} else if (isInitialize) {
+				// Create new session for initialize request
+				sessionContext = sessionManager.createSession();
+				console.log(`Created new session: ${sessionContext.sessionId}`);
+				
+				// Connect server to transport for new session
+				const { server } = createSessionServer(app, sessionManager);
+				await server.connect(sessionContext.transport);
+			} else {
+				// Invalid session and not initialize request
+				console.log("Invalid session ID and not initialize request");
+				if (!res.headersSent) {
+					res.status(400).json({
+						jsonrpc: "2.0",
+						error: {
+							code: -32002,
+							message: "Invalid session ID. Please initialize a new session.",
+						},
+						id: null,
+					});
+				}
+				return;
+			}
+			
+			// Handle the request with the session transport
+			await sessionContext.transport.handleRequest(req, res, req.body);
+			
 		} catch (error) {
 			console.error("Error handling MCP request:", error);
 			if (!res.headersSent) {
@@ -45,24 +83,18 @@ export const registerMcpRoute = (route: IRoute, app: App) => {
 	route.get(methodNotAllowed);
 	route.delete(methodNotAllowed);
 
-	const { server } = createServer(app);
-	server.connect(transport);
 	// Handle server shutdown
 	process.on("SIGINT", async () => {
-		console.log("Shutting down server...");
+		console.log("Shutting down MCP server...");
 		try {
-			console.log(`Closing transport`);
-			await transport.close();
+			await sessionManager.shutdown();
+			console.log("MCP server shutdown complete");
 		} catch (error) {
-			console.error(`Error closing transport:`, error);
-		}
-
-		try {
-			await server.close();
-			console.log("Server shutdown complete");
-		} catch (error) {
-			console.error("Error closing server:", error);
+			console.error("Error during MCP server shutdown:", error);
 		}
 		process.exit(0);
 	});
+
+	// Return session manager for potential external use
+	return { sessionManager };
 };
