@@ -24,7 +24,7 @@ Antinet Zettelkasten 是 Scott P. Scheper 编写的书籍，详细介绍了卢�
 MCP Server 它将提供遵循 Antinet Zettelkasten 思想的工具来操作 Obsidian 笔记。
 
 更具体的方案：
-1. 主卡片存放在统一路径 `ZK_Main_Box/` 下（表示主卡片盒），每张主卡片的文件名作为 Antinet 卡片编号，比如 `3.1a2c.md`
+1. 主卡片存放在统一路径 `ZK_MainBox/` 下（表示主卡片盒），每张主卡片的文件名作为 Antinet 卡片编号，比如 `3.1a2c.md`
 2. 为了避免主卡片内容过长，编辑保存主卡片时，限制内容字符串长度不可超过 4000；允许追加内容（比如说明更新内容见 xxx 新的主卡片）但内容（字符串长度）限制在 200 字以内
 3. 为了 Agent 在不同工作目录下进行记忆存储使用，在主卡片盒中设计一种根节点卡片：项目主卡片，它会在 Obsidian 笔记属性中记录一个 uuid ，用来与工作目录下的一个配置文件 `.antinet.json` 进行对应。项目主卡片的子孙主卡片，都是与该项目紧密相关的内容。
 4. 在 MCP 远程连接建立之后，Agent 需要调用项目初始化工具 `init_antinet` 来告诉 Antinet MCP Server 当前工作目录是什么。MCP Server 将读取该工作目录中的 `.antinet.json` 并记录下它对应的项目主卡片的编号，并告知给 Agent。如果工作目录未记录过内容，则 MCP Server 将自动在工作目录下创建 `.antinet.json` 配置文件并在 Obsidian 中创建相应的项目主卡片。

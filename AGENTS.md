@@ -2,6 +2,7 @@
 
 ## Project overview
 
+- 项目核心产品逻辑见 [TODO.md](./docs/TODO.md)
 - Target: Obsidian Community Plugin (TypeScript → bundled JavaScript).
 - Entry point: `main.ts` compiled to `main.js` and loaded by Obsidian.
 - Required release artifacts: `main.js`, `manifest.json`, and optional `styles.css`.

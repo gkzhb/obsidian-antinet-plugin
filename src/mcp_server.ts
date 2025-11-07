@@ -2,7 +2,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { App } from "obsidian";
 
-import { listTreeRootMainCard, readMainCardTool } from "./antinet/main_card";
+import {
+	listTreeRootMainCard,
+	readMainCardTool,
+	createMainCardTool,
+	appendMainCardTool,
+} from "./antinet/main_card";
+import { initAntinetTool } from "./antinet/init_tools";
 import {
 	getSessionStatsTool,
 	cleanupSessionsTool,
@@ -30,6 +36,9 @@ export const createMcpServer = (
 	[
 		readMainCardTool,
 		listTreeRootMainCard,
+		initAntinetTool,
+		createMainCardTool,
+		appendMainCardTool,
 		getSessionStatsTool,
 		cleanupSessionsTool,
 	].forEach((getTool) => {

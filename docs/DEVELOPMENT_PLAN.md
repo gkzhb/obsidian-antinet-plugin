@@ -1,5 +1,9 @@
 # 开发规划 - Obsidian Antinet Zettelkasten MCP Plugin
 
+## 项目背景信息
+
+项目背景及产品核心逻辑阅读 [TODO.md](./docs/TODO.md) 文件
+
 ## 当前实现状态
 
 ### ✅ 已实现功能
@@ -35,7 +39,7 @@
 - 支持两种类型: `global` (全局) 和 `project` (项目相关)
 - 内容长度验证: 主内容 ≤ 4000字符
 - 自动生成符合Antinet编号规范的文件名
-- 文件保存在 `ZK_Main_Box/` 目录下
+- 文件保存在 `ZK_MainBox/` 目录下
 
 #### 3. 内容追加工具 (`append_main_card`)
 **位置**: `src/antinet/main_card.ts` (扩展)
